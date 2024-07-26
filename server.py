@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
 from services.get_players import get_players
 from models.player import Player
@@ -61,6 +60,3 @@ async def get_stats():
   stats["points_per_player"] = float("{0:.2f}".format(total_points / len(players)))
 
   return stats
-
-if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=8000, log_level="info")
