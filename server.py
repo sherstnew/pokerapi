@@ -1,13 +1,14 @@
 from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 from services.get_players import get_players
 from models.player import Player
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+app.mount("/website/dist", StaticFiles(directory="website/dist", html=True), name="dist")
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,7 +20,7 @@ app.add_middleware(
 
 @app.get('/')
 async def root(response: Response):
-  with open('./static/index.html') as fh:
+  with open('./website/dist/index.html') as fh:
     data = fh.read()
   return Response(content=data, media_type="text/html")
 
@@ -60,3 +61,6 @@ async def get_stats():
   stats["points_per_player"] = float("{0:.2f}".format(total_points / len(players)))
 
   return stats
+
+if __name__ == "__main__":
+    uvicorn.run("server:app", host="0.0.0.0", port=8000, log_level="info")
