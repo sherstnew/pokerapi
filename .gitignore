@@ -3,3 +3,6 @@
 .env
 
 venv/*
+
+cert.pem
+key.pem
