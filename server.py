@@ -1,13 +1,16 @@
-from fastapi import FastAPI, Response
+import os
+from fastapi import FastAPI, Response, status
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-import ssl
+from dotenv import load_dotenv
 
 from services.get_players import get_players
 from models.player import Player
 
 app = FastAPI()
+
+load_dotenv()
 
 app.mount("/website/dist", StaticFiles(directory="website/dist", html=True), name="dist")
 
@@ -19,11 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get('/')
-async def root(response: Response):
-  with open('./website/dist/index.html') as fh:
-    data = fh.read()
-  return Response(content=data, media_type="text/html")
+@app.get('/db/{password}')
+async def get_db(password: str):
+  if password == os.getenv("SECRET_PASSWORD"):
+    return FileResponse('PokerStatistics.db')
+  else:
+    return Response(status_code=status.HTTP_403_FORBIDDEN)
 
 @app.get('/players/all')
 async def get_all() -> list[Player]:
