@@ -1,7 +1,5 @@
 *.pyc
 
-website/*
-
 .env
 
 venv/*

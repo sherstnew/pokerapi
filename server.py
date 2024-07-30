@@ -2,6 +2,7 @@ from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import ssl
 
 from services.get_players import get_players
 from models.player import Player
@@ -62,5 +63,6 @@ async def get_stats():
 
   return stats
 
+
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run("server:app", host="0.0.0.0", port=9631, log_level="info", ssl_keyfile=r'C:\Users\Денис\projects\prjs\pokerapi\key.pem', ssl_certfile=r'C:\Users\Денис\projects\prjs\pokerapi\cert.pem')
