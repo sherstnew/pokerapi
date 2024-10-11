@@ -16,7 +16,7 @@ export default function Stats(props: IStatsProps) {
   return (
     <section className={styles.container}>
         <section className={styles.landing}>
-          <h1 className={styles.header}>🃏 Покерная лига</h1>
+          <h1 className={styles.header}>Покерная лига 🃏</h1>
           <h3 className={styles.subheader}><img src={coolSmile} alt="" width={30} height={30} /> <span>Играют только профессионалы</span></h3>
           <div className={styles.buttons}>
             <a href='mailto:sherstnev.denis.v@gmail.com' target='_blank' className={styles.button + ' ' + styles.contact}>
