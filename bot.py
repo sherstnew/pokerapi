@@ -99,7 +99,7 @@ async def help(message: Message):
 
 @dp.message(Command("stats"))
 async def stats(message: Message, current_player):
-    cursor.execute(f'SELECT * FROM Stats Where Id == {current_player}')
+    cursor.execute(f'SELECT * FROM Stats Where Id == "{current_player}"')
     player = cursor.fetchall()
     rank = None
 
@@ -128,13 +128,13 @@ async def action(message: Message, current_player, amount):
         move = 'Debt'
     elif move == 'Фишки':
         move = 'Chips'
-    cursor.execute(f'SELECT {move} FROM Stats Where Id == {current_player}')
+    cursor.execute(f'SELECT {move} FROM Stats Where Id == "{current_player}"')
     users = cursor.fetchall()
-    cursor.execute(f'UPDATE Stats SET {move} == {amount + users[0][0]} WHERE Id == {current_player}')
-    cursor.execute(f'Select * FROM Stats Where Id == {current_player}')
+    cursor.execute(f'UPDATE Stats SET {move} == {amount + users[0][0]} WHERE Id == "{current_player}"')
+    cursor.execute(f'Select * FROM Stats Where Id == "{current_player}"')
     numbers = cursor.fetchone()
     cursor.execute(f'UPDATE Stats SET Points == {round(0.7 * numbers[2] + 0.3 * numbers[3] - numbers[5] * 0.9)}'
-                   f' WHERE Id == {current_player}')
+                   f' WHERE Id == "{current_player}"')
     connection.commit()
     move, user = None, None
     await message.answer('Изменение успешно сохранено!', parse_mode='html')
@@ -143,18 +143,16 @@ async def action(message: Message, current_player, amount):
 
 @dp.message(Command("param"))
 async def param(message: Message, current_player):
-    global user
-    user = current_player
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(
         text="Фишки",
-        callback_data="chips"))
+        callback_data=f"chips-{current_player}"))
     builder.row(InlineKeyboardButton(
         text="Победа",
-        callback_data="victories"))
+        callback_data=f"victories-{current_player}"))
     builder.row(InlineKeyboardButton(
         text="Долг",
-        callback_data="debt"))
+        callback_data=f"debt-{current_player}"))
     await message.answer(
         "-------------------------------------------------------------------\n♥️ Выберите параметр Игрока ♥️"
         "\n-------------------------------------------------------------------",
@@ -167,6 +165,7 @@ async def message_filter(message: Message) -> None:
     global write, user
     if write:
         try:
+            print(message.text, user)
             number = int(message.text)
             write = False
             await action(message, user, number)
@@ -233,39 +232,41 @@ async def general_statistics_value(callback: CallbackQuery):
 
 @dp.callback_query(F.data.startswith("open_stats"))
 async def statistics_value(callback: CallbackQuery):
-    await stats(callback.message, int(callback.data.split('-')[1]))
+    await stats(callback.message, callback.data.split('-')[1])
     await callback.answer()
 
 
 @dp.callback_query(F.data.startswith("write_data"))
 async def statistics_write(callback: CallbackQuery):
-    await param(callback.message, int(callback.data.split('-')[1]))
+    await param(callback.message, callback.data.split('-')[1])
     await callback.answer()
 
-@dp.callback_query(F.data == "debt")
+@dp.callback_query(F.data.startswith("debt"))
 async def debt(callback: CallbackQuery):
-    global move, write
+    global move, write, user
+    user = callback.data.split("-")[1]
     move = 'Долг'
     write = True
-    cursor.execute(f'SELECT Name FROM Stats Where Id == {user}')
+    cursor.execute(f'SELECT Name FROM Stats WHERE Id == "{user}"')
     users = cursor.fetchone()
     await callback.message.answer(f'Игрок и параметр выбраны, введите число\nИгрок: {users[0]}, Параметр: {move}')
     await callback.message.delete()
     await callback.answer()
 
 
-@dp.callback_query(F.data == "victories")
+@dp.callback_query(F.data.startswith("victories"))
 async def victories(callback: CallbackQuery):
     global move, user
-    cursor.execute(f'SELECT Victories FROM Stats Where Id == {user}')
+    user = callback.data.split("-")[1]
+    cursor.execute(f'SELECT Victories FROM Stats WHERE Id == "{user}"')
     users = cursor.fetchall()
-    cursor.execute(f'UPDATE Stats SET Victories == {1 + users[0][0]} WHERE Id == {user}')
-    cursor.execute(f'Select * FROM Stats Where Id == {user}')
+    cursor.execute(f'UPDATE Stats SET Victories == {1 + users[0][0]} WHERE Id == "{user}"')
+    cursor.execute(f'Select * FROM Stats WHERE Id == "{user}"')
     numbers = cursor.fetchone()
     cursor.execute(f'UPDATE Stats SET Points == {round(0.7 * numbers[2] + 0.3 * numbers[3] - numbers[5] * 0.9)}'
-                   f' WHERE Id == {user}')
+                   f' WHERE Id == "{user}"')
     connection.commit()
-    cursor.execute(f'SELECT Name FROM Stats Where Id == {user}')
+    cursor.execute(f'SELECT Name FROM Stats WHERE Id == "{user}"')
     users = cursor.fetchone()
     await callback.message.answer(f'Изменение успешно сохранено!\n{users[0]} получил +1 победу')
     move, user = None, None
@@ -273,18 +274,19 @@ async def victories(callback: CallbackQuery):
     await callback.answer()
 
 
-@dp.callback_query(F.data == "chips")
+@dp.callback_query(F.data.startswith("chips"))
 async def chips(callback: CallbackQuery):
-    global move, write
+    global move, write, user
+    user = callback.data.split("-")[1]
     write = True
     move = 'Фишки'
-    cursor.execute(f'SELECT Name FROM Stats Where Id == {user}')
+    cursor.execute(f'SELECT Name FROM Stats Where Id == "{user}"')
     users = cursor.fetchone()
     await callback.message.answer(f'Игрок и параметр выбраны, введите число\nИгрок:  {users[0]},   Параметр:  {move}')
     await callback.message.delete()
     await callback.answer()
 
 
-# if __name__ == "__main__":
-logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-# asyncio.run(main())
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    asyncio.run(main())
