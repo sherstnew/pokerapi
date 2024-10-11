@@ -165,7 +165,6 @@ async def message_filter(message: Message) -> None:
     global write, user
     if write:
         try:
-            print(message.text, user)
             number = int(message.text)
             write = False
             await action(message, user, number)
