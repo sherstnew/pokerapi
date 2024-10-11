@@ -10,8 +10,8 @@ interface ISeasonProps {
 export default function Season(props: ISeasonProps) {
   return (
     <section className={styles.season}>
-      <div className={styles.subheader}>01.06.2024-01.09.2024</div>
-      <header className={styles.header}>Текущий сезон - Лето 2024</header>
+      <div className={styles.subheader}>Сейчас проходит</div>
+      <header className={styles.header}>Текущий сезон</header>
       {
         props.bestPlayer
         ?
