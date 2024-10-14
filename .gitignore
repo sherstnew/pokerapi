@@ -7,3 +7,5 @@ venv
 
 cert.pem
 key.pem
+
+PokerStatistics.db
