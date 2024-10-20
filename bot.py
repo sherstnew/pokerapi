@@ -117,7 +117,7 @@ async def stats(message: Message, current_player):
         rank = 'Платина'
 
     await message.answer(
-        f'<pre>ID| Имя | Фишки | Победы | Очки | Долг | Ранг\n\n{player[0][0]} | {player[0][1].split(" ")[0]} |'
+        f'<pre>Имя | Фишки | Победы | Очки | Долг | Ранг\n\n{player[0][1].split(" ")[0]} |'
         f' {player[0][2]} | {player[0][3]} | {player[0][4]} | {player[0][5]} | {rank[:3]}</pre>', parse_mode='html')
 
 
@@ -195,7 +195,7 @@ async def input_data_value(callback: CallbackQuery):
 async def general_statistics_value(callback: CallbackQuery):
     cursor.execute('SELECT * FROM Stats')
     players = cursor.fetchall()
-    answer = '<pre>ID| Имя | Фишки | Победы | Очки | Долг | Ранг\n\n'
+    answer = '<pre>Имя | Фишки | Победы | Очки | Долг | Ранг\n\n'
     players = sorted(players, key=lambda x: x[-2], reverse=True)
 
     chips_space = max([len(str(i[2])) for i in players])
@@ -220,7 +220,7 @@ async def general_statistics_value(callback: CallbackQuery):
         elif 3500 <= points:
             rank = 'Платина'
 
-        answer += f'{Id} | {name.split(" ")[0] + (name_space - len(name.split(" ")[0])) * " "} | {chips}' \
+        answer += f'{name.split(" ")[0] + (name_space - len(name.split(" ")[0])) * " "} | {chips}' \
                   f'{(chips_space - len(str(chips))) * " "} | {victories}{(win_space - len(str(victories))) * " "} |' \
                   f' {points}{(score_space - len(str(points))) * " "} | {debt}{(debt_space - len(str(debt))) * " "} |' \
                   f' {rank[:3]}\n'
