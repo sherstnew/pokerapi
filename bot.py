@@ -91,7 +91,7 @@ async def secret(message: Message):
 async def help(message: Message):
     await message.answer("""
     /start   \\-\\-\\>   Для начала диалога с ботом\n Ранги:
-    \n \\-♾ \\< Бронза < 100\n 100 ≤ Серебро \\< 600\n 600 ≤ Золото \\< 1250\n 1250 ≤ Алмаз \\< 2500\n 2500 ≤ Рубин \\< 3500 \n 3500 ≤ Платина \\< \\+♾
+    \n \\-♾ \\< Бронза < 100\n 100 ≤ Серебро \\< 600\n 600 ≤ Золото \\< 1250\n 1250 ≤ Алмаз \\< 2500\n 2500 ≤ Рубин \\< 3500 \n 3500 ≤ Изумруд \\< 5000 \n 5000 ≤ Платина \\< \\+♾
     \n\nЗачем нужны ранги? \\- Это ваш Статус, чем вы выше \\- тем вы престижнее\n\nВсе начинают со стартовым капиталом в 640 фишек\\!
       \n/secret \\- секрет\nЧто ты сюда вообще зашел???Дедукцию включать надо было\\!\\!\\!""",
                          parse_mode='MarkDownV2')
@@ -113,7 +113,9 @@ async def stats(message: Message, current_player):
         rank = 'Алмаз'
     elif 2500 <= player[0][4] < 3500:
         rank = 'Рубин'
-    elif 3500 <= player[0][4]:
+    elif 3500 <= player[0][4] < 5000:
+        rank = 'Изумруд'
+    elif 5000 <= player[0][4]:
         rank = 'Платина'
 
     await message.answer(
@@ -217,7 +219,9 @@ async def general_statistics_value(callback: CallbackQuery):
             rank = 'Алмаз'
         elif 2500 <= points < 3500:
             rank = 'Рубин'
-        elif 3500 <= points:
+        elif 3500 <= points < 5000:
+            rank = 'Изумруд'
+        elif 5000 <= points:
             rank = 'Платина'
 
         answer += f'{name.split(" ")[0] + (name_space - len(name.split(" ")[0])) * " "} | {chips}' \
